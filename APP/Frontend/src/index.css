@@ -1,15 +1,28 @@
-html,
-body,
-#root {
-  margin: 0;
-  min-height: 100%;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f5f7fb;
-  color: #1d1f23;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --brand-orange: #FF6600;
+  --brand-surface: #F4F4F4;
+  --brand-charcoal: #1A1A1A;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--brand-surface);
+  color: var(--brand-charcoal);
+}
+
+#root {
+  min-height: 100vh;
 }
 
 * {
@@ -17,7 +30,9 @@ body {
 }
 
 button,
-input {
+input,
+textarea,
+select {
   font: inherit;
 }
 
