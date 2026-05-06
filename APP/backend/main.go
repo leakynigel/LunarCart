@@ -1,25 +1,28 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"log"
 
-	"lunarcart-backend/routes"
+	"LunarCart/APP/backend/core/config"
+	"LunarCart/APP/backend/routes"
 )
 
 func main() {
-	http.HandleFunc("/api/auth/login", routes.Login)
-	http.HandleFunc("/api/auth/register", routes.Register)
+	// Load environment variables
+	config.LoadEnv()
 
-	http.HandleFunc("/api/products", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-		w.Write([]byte("Product endpoint not implemented"))
-	})
-	http.HandleFunc("/api/orders", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-		w.Write([]byte("Orders endpoint not implemented"))
-	})
+	// Connect to database
+	config.ConnectDB()
+	if config.DB != nil {
+		defer config.DB.Close()
+	}
 
-	fmt.Println("Server running on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	// Setup routes
+	router := routes.SetupRouter()
+
+	// Start server
+	log.Printf("🚀 Server starting on port %s", config.AppConfig.Port)
+	if err := router.Run(":" + config.AppConfig.Port); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
 }
