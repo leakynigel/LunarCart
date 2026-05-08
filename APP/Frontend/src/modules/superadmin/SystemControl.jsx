@@ -22,7 +22,7 @@ export default function SystemControl() {
   const handleRoleChange = (user, role) => console.log(`Triggered change role for ${user.name} -> ${role}`)
 
   return (
-    <div className="space-y-6">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-700 space-y-6">
       <header className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
@@ -47,7 +47,7 @@ export default function SystemControl() {
 
           <div className="mt-6 space-y-5">
             {systemMetrics.map((metric) => (
-              <div key={metric.label} className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+              <div key={metric.label} className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-5 transition-all duration-500 hover:bg-white hover:shadow-md hover:scale-[1.02]">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-brand-charcoal">{metric.label}</span>
                   <span className="text-sm font-semibold text-brand-orange">{metric.value}%</span>

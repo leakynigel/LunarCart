@@ -4,6 +4,9 @@ const disputeList = [
   { id: 'D-115', buyer: 'Luna', seller: 'Orbit Co.', amount: 'Ksh 320.00', status: 'Pending' },
   { id: 'D-118', buyer: 'Nova', seller: 'Starlight Ltd.', amount: 'Ksh 540.00', status: 'Pending' },
   { id: 'D-121', buyer: 'Celeste', seller: 'MoonMart', amount: 'Ksh 119.00', status: 'Pending' },
+  { id: 'D-115', buyer: 'Luna', seller: 'Orbit Co.', amount: 'Ksh 320.00', status: 'Pending' },
+  { id: 'D-118', buyer: 'Nova', seller: 'Starlight Ltd.', amount: 'Ksh 540.00', status: 'Pending' },
+  { id: 'D-121', buyer: 'Celeste', seller: 'MoonMart', amount: 'Ksh 119.00', status: 'Pending' },
 ]
 
 export default function AdminPanel() {
@@ -11,14 +14,14 @@ export default function AdminPanel() {
   const handleReject = (dispute) => console.log(`Triggered Reject payout for ${dispute.id}`)
 
   return (
-    <div className="space-y-6">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-700 space-y-6">
       <header className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-brand-orange">Role: Admin</p>
             <h1 className="text-3xl font-semibold text-brand-charcoal">Dispute Management</h1>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-3xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          <div className="inline-flex items-center gap-2 rounded-3xl bg-slate-50 px-4 py-3 text-sm text-slate-600 transition-all hover:scale-105 cursor-default">
             <span className="inline-block h-3 w-3 rounded-full bg-brand-orange" /> {disputeList.length} Pending
           </div>
         </div>
@@ -56,7 +59,7 @@ export default function AdminPanel() {
                     <button
                       type="button"
                       onClick={() => handleReject(dispute)}
-                      className="rounded-2xl border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+                      className="rounded-2xl border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-100 hover:scale-110 active:scale-90"
                     >
                       Reject
                     </button>

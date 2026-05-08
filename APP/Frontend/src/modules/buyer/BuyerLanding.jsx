@@ -12,7 +12,7 @@ const mockProducts = Array.from({ length: 10 }, (_, index) => ({
 
 function ProductCard({ product, onAddToCart }) {
   return (
-    <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-xl hover:border-brand-orange/20">
       <img className="h-44 w-full rounded-3xl object-cover" src={product.image} alt={product.title} />
       <div className="mt-4 space-y-3">
         <div>
@@ -38,7 +38,7 @@ export default function BuyerLanding() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-1000 space-y-6">
       <header className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
@@ -47,7 +47,7 @@ export default function BuyerLanding() {
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-orange px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-orange-600 hover:scale-105 active:scale-95"
             onClick={() => console.log('Triggered View Cart')}
           >
             <ShoppingCart className="h-4 w-4" />
@@ -80,7 +80,7 @@ export default function BuyerLanding() {
         <button
           type="button"
           onClick={() => setShowEscrow(!showEscrow)}
-          className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 active:scale-95"
+          className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:scale-105 active:scale-95"
         >
           <Info className="h-4 w-4 text-brand-orange" />
           {showEscrow ? 'Hide Protection Details' : 'Secure Escrow Information'}
