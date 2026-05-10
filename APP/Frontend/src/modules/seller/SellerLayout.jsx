@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   Menu,
-  X,
   Search,
   Bell,
   LogOut,
@@ -16,7 +15,6 @@ import {
   MessageSquare,
   HelpCircle,
   Layers,
-  MoreVertical,
 } from 'lucide-react';
 
 /**
@@ -75,8 +73,12 @@ export default function SellerLayout({ children, onPersonaSwitch }) {
                   `w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all text-sm font-bold ${isActive ? 'bg-brand-orange text-white shadow-lg shadow-orange-100' : 'text-gray-600 hover:bg-orange-50 hover:text-[#FF6600]'}`
                 }
               >
-                <Icon size={22} strokeWidth={item.active ? 3 : 2} />
-                {sidebarOpen && item.label}
+                {({ isActive }) => (
+                  <>
+                    <Icon size={22} strokeWidth={isActive ? 3 : 2} />
+                    {sidebarOpen && item.label}
+                  </>
+                )}
               </NavLink>
             );
           })}

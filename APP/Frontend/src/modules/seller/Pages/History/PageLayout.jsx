@@ -12,7 +12,7 @@ const PageLayout = () => {
   return (
     <div className="flex flex-col min-h-full">
       {/* ===== GREY HEADER SECTION (300px) ===== */}
-      <div className="h-[300px] bg-gray-200 p-10 flex flex-col justify-between">
+      <div className="h-[300px] bg-gray-300 p-10 flex flex-col justify-between">
         {/* Top Control Bar */}
         <div className="flex items-center justify-between gap-10">
           {/* Left Side: Actions & Filters */}
@@ -56,7 +56,7 @@ const PageLayout = () => {
         </div>
 
         {/* Heading Section */}
-        <div className="space-y-2">
+        <div className="space-y-8">
           <h1 className="text-4xl font-black text-brand-charcoal tracking-tighter">
             Operation History
           </h1>
@@ -71,7 +71,7 @@ const PageLayout = () => {
 
       {/* ===== DATA SHEET SECTION ===== */}
       <div className="px-10 -mt-16 pb-12">
-        <div className="bg-white rounded-[3rem] shadow-2xl shadow-gray-300/30 border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-[rem] shadow-2xl shadow-gray-600/30 border border-slate-50 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>

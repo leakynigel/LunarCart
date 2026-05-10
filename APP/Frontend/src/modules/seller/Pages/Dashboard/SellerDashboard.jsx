@@ -21,6 +21,8 @@
  */
 
 import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import HistoryPageLayout from '../History/PageLayout';
 import {
   LineChart,
   Line,
@@ -317,6 +319,130 @@ const OrangeButton = ({ label, onClick }) => (
 );
 
 /**
+ * Internal component holding your original Dashboard UI.
+ * This keeps your 400+ lines of code exactly as they were.
+ */
+const DashboardOverview = ({ mockData, isLoaded }) => (
+  <div className="p-10 max-w-[1600px] mx-auto space-y-10">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="lg:col-span-8 space-y-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard title="Total Sales" value={mockData.stats.totalSales} trend={mockData.trends.sales} isLoading={!isLoaded} />
+          <StatCard title="Total Orders" value={mockData.stats.totalOrders} trend={mockData.trends.orders} isLoading={!isLoaded} />
+          <StatCard title="Total Visitors" value={mockData.stats.totalVisitors} trend={mockData.trends.visitors} isLoading={!isLoaded} />
+        </div>
+
+        <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
+          {!isLoaded ? <SkeletonLoader height="h-[400px]" /> : (
+            <>
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-xl font-black text-brand-charcoal">Revenue Analytics</h3>
+                <div className="flex gap-4">
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-brand-orange" /> <span className="text-xs font-bold text-slate-400">Revenue</span></div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-slate-300 border-dashed" /> <span className="text-xs font-bold text-slate-400">Order</span></div>
+                </div>
+              </div>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={mockData.revenueData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 12, fontWeight: 700}} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 12, fontWeight: 700}} />
+                  <Tooltip content={<RevenueTooltip />} />
+                  <Line type="monotone" dataKey="revenue" stroke="#FF6600" strokeWidth={4} dot={{r: 6, fill: '#FF6600', strokeWidth: 3, stroke: '#fff'}} />
+                  <Line type="monotone" dataKey="orders" stroke="#CBD5E1" strokeWidth={3} strokeDasharray="8 5" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+            <h4 className="font-black mb-6">Active User</h4>
+            {!isLoaded ? <SkeletonLoader height="h-48" /> : (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={mockData.activeUserData}>
+                  <Bar dataKey="users" fill="#FF6600" radius={[4, 4, 0, 0]} barSize={20} />
+                  <XAxis dataKey="time" hide />
+                  <Tooltip cursor={{fill: 'transparent'}} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+          <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+            <h4 className="font-black mb-6">Conversion Rate</h4>
+            {!isLoaded ? <SkeletonLoader height="h-48" /> : (
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={mockData.conversionData}>
+                  <Line type="monotone" dataKey="rate" stroke="#FF6600" strokeWidth={4} dot={false} />
+                  <XAxis dataKey="date" hide />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="lg:col-span-4 space-y-10">
+        <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+          <h3 className="text-lg font-black mb-8">Top Categories</h3>
+          {!isLoaded ? <SkeletonLoader height="h-64" /> : (
+            <div className="relative flex flex-col items-center">
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie data={mockData.categoryBreakdown} cx="50%" cy="50%" innerRadius={70} outerRadius={100} paddingAngle={8} dataKey="value">
+                    {mockData.categoryBreakdown.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} stroke="none" />)}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Sales</p>
+                <p className="text-xl font-black text-brand-charcoal">{formatKsh(mockData.categoryTotal)}</p>
+              </div>
+              <div className="w-full mt-6 space-y-4">
+                {mockData.categoryBreakdown.map(cat => (
+                  <div key={cat.name} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-md" style={{backgroundColor: cat.fill}} /> <span className="text-sm font-bold text-slate-500">{cat.name}</span></div>
+                    <span className="text-sm font-black text-brand-charcoal">{Math.round((cat.value / mockData.categoryTotal) * 100)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden text-center">
+          <h3 className="text-lg font-black mb-6 text-left">Monthly Target</h3>
+          {!isLoaded ? <SkeletonLoader height="h-64" /> : (
+            <div className="flex flex-col items-center">
+              <ResponsiveContainer width="100%" height={200}>
+                <RadialBarChart cx="50%" cy="100%" innerRadius="150%" outerRadius="200%" barSize={15} data={[{value: mockData.monthlyTarget.percentage, fill: '#FF6600'}]} startAngle={180} endAngle={0}>
+                  <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
+                  <RadialBar background clockWise dataKey="value" cornerRadius={10} />
+                </RadialBarChart>
+              </ResponsiveContainer>
+              <div className="absolute top-[160px] text-center">
+                <p className="text-4xl font-black text-brand-charcoal">{mockData.monthlyTarget.percentage}%</p>
+                <p className="text-sm font-bold text-green-500 mt-2">Great Progress!</p>
+              </div>
+              <div className="w-full mt-10 grid grid-cols-2 gap-4 border-t border-slate-50 pt-6">
+                <div className="text-center"><p className="text-[10px] font-black text-slate-400 uppercase">Target</p><p className="text-sm font-black">{formatKsh(mockData.monthlyTarget.goal)}</p></div>
+                <div className="text-center"><p className="text-[10px] font-black text-slate-400 uppercase">Revenue</p><p className="text-sm font-black text-brand-orange">{formatKsh(mockData.monthlyTarget.current)}</p></div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <RecentOrdersSection orders={mockData.recentOrders} isLoading={!isLoaded} />
+      <TopCustomersSection customers={mockData.topCustomers} isLoading={!isLoaded} />
+    </div>
+  </div>
+);
+
+/**
  * Main SellerDashboard component
  * @param {Object} props
  * @param {Object} props.mockData - Optional mock data (defaults to MOCK_DATA)
@@ -326,158 +452,13 @@ export default function SellerDashboard({
   mockData = MOCK_DATA,
   onPersonaSwitch = null,
 } = {}) {
-  // State management
   const [isLoaded, setIsLoaded] = useState(true);
-
-  // Simulate loading on mount (optional)
-  // useEffect(() => {
-  //   setIsLoaded(false);
-  //   const timer = setTimeout(() => setIsLoaded(true), 2000);
-  //   return () => clearTimeout(timer);
-  // }, []);
   return (
     <SellerLayout onPersonaSwitch={onPersonaSwitch}>
-      <div className="p-10 max-w-[1600px] mx-auto space-y-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <div className="lg:col-span-8 space-y-10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <StatCard title="Total Sales" value={mockData.stats.totalSales} trend={mockData.trends.sales} isLoading={!isLoaded} />
-              <StatCard title="Total Orders" value={mockData.stats.totalOrders} trend={mockData.trends.orders} isLoading={!isLoaded} />
-              <StatCard title="Total Visitors" value={mockData.stats.totalVisitors} trend={mockData.trends.visitors} isLoading={!isLoaded} />
-            </div>
-
-            <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
-              {!isLoaded ? <SkeletonLoader height="h-[400px]" /> : (
-                <>
-                  <div className="flex justify-between items-center mb-8">
-                    <h3 className="text-xl font-black text-brand-charcoal">Revenue Analytics</h3>
-                    <div className="flex gap-4">
-                      <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-brand-orange" /> <span className="text-xs font-bold text-slate-400">Revenue</span></div>
-                      <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-slate-300 border-dashed" /> <span className="text-xs font-bold text-slate-400">Order</span></div>
-                    </div>
-                  </div>
-                  <ResponsiveContainer width="100%" height={350}>
-                    <LineChart data={mockData.revenueData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                      <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 12, fontWeight: 700}} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{fill: '#94A3B8', fontSize: 12, fontWeight: 700}} />
-                      <Tooltip content={<RevenueTooltip />} />
-                      <Line type="monotone" dataKey="revenue" stroke="#FF6600" strokeWidth={4} dot={{r: 6, fill: '#FF6600', strokeWidth: 3, stroke: '#fff'}} />
-                      <Line type="monotone" dataKey="orders" stroke="#CBD5E1" strokeWidth={3} strokeDasharray="8 5" dot={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-                <h4 className="font-black mb-6">Active User</h4>
-                {!isLoaded ? <SkeletonLoader height="h-48" /> : (
-                  <ResponsiveContainer width="100%" height={200}>
-                    <BarChart data={mockData.activeUserData}>
-                      <Bar dataKey="users" fill="#FF6600" radius={[4, 4, 0, 0]} barSize={20} />
-                      <XAxis dataKey="time" hide />
-                      <Tooltip cursor={{fill: 'transparent'}} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-              </div>
-              <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-                <h4 className="font-black mb-6">Conversion Rate</h4>
-                {!isLoaded ? <SkeletonLoader height="h-48" /> : (
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={mockData.conversionData}>
-                      <Line type="monotone" dataKey="rate" stroke="#FF6600" strokeWidth={4} dot={false} />
-                      <XAxis dataKey="date" hide />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 space-y-10">
-            <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-              <h3 className="text-lg font-black mb-8">Top Categories</h3>
-              {!isLoaded ? <SkeletonLoader height="h-64" /> : (
-                <div className="relative flex flex-col items-center">
-                  <ResponsiveContainer width="100%" height={240}>
-                    <PieChart>
-                      <Pie data={mockData.categoryBreakdown} cx="50%" cy="50%" innerRadius={70} outerRadius={100} paddingAngle={8} dataKey="value">
-                        {mockData.categoryBreakdown.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} stroke="none" />)}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Sales</p>
-                    <p className="text-xl font-black text-brand-charcoal">{formatKsh(mockData.categoryTotal)}</p>
-                  </div>
-                  <div className="w-full mt-6 space-y-4">
-                    {mockData.categoryBreakdown.map(cat => (
-                      <div key={cat.name} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3"><div className="w-4 h-4 rounded-md" style={{backgroundColor: cat.fill}} /> <span className="text-sm font-bold text-slate-500">{cat.name}</span></div>
-                        <span className="text-sm font-black text-brand-charcoal">{Math.round((cat.value / mockData.categoryTotal) * 100)}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden text-center">
-              <h3 className="text-lg font-black mb-6 text-left">Monthly Target</h3>
-              {!isLoaded ? <SkeletonLoader height="h-64" /> : (
-                <div className="flex flex-col items-center">
-                  <ResponsiveContainer width="100%" height={200}>
-                    <RadialBarChart cx="50%" cy="100%" innerRadius="150%" outerRadius="200%" barSize={15} data={[{value: mockData.monthlyTarget.percentage, fill: '#FF6600'}]} startAngle={180} endAngle={0}>
-                      <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                      <RadialBar background clockWise dataKey="value" cornerRadius={10} />
-                    </RadialBarChart>
-                  </ResponsiveContainer>
-                  <div className="absolute top-[160px] text-center">
-                    <p className="text-4xl font-black text-brand-charcoal">{mockData.monthlyTarget.percentage}%</p>
-                    <p className="text-sm font-bold text-green-500 mt-2">Great Progress!</p>
-                  </div>
-                  <div className="w-full mt-10 grid grid-cols-2 gap-4 border-t border-slate-50 pt-6">
-                    <div className="text-center"><p className="text-[10px] font-black text-slate-400 uppercase">Target</p><p className="text-sm font-black">{formatKsh(mockData.monthlyTarget.goal)}</p></div>
-                    <div className="text-center"><p className="text-[10px] font-black text-slate-400 uppercase">Revenue</p><p className="text-sm font-black text-brand-orange">{formatKsh(mockData.monthlyTarget.current)}</p></div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-              <h3 className="text-lg font-black mb-6">Traffic Sources</h3>
-              {!isLoaded ? <SkeletonLoader height="h-48" /> : (
-                <div className="space-y-6">
-                  {mockData.trafficSources.map(source => (
-                    <div key={source.name} className="space-y-2">
-                      <div className="flex justify-between text-sm font-bold"><span className="text-slate-500">{source.name}</span><span className="text-brand-charcoal">{source.value}%</span></div>
-                      <div className="w-full h-2 bg-slate-50 rounded-full"><div className="h-full bg-brand-orange rounded-full" style={{width: `${source.value}%`}} /></div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ===== SECTION D: RECENT ORDERS & TOP CUSTOMERS (SIDE BY SIDE) ===== */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <RecentOrdersSection
-            orders={mockData.recentOrders}
-            isLoading={!isLoaded}
-          />
-          <TopCustomersSection
-            customers={mockData.topCustomers}
-            isLoading={!isLoaded}
-          />
-        </div>
-
-        {/* Spacer for floating button */}
-        <div className="h-20" />
-      </div>
+      <Routes>
+        <Route path="/" element={<DashboardOverview mockData={mockData} isLoaded={isLoaded} />} />
+        <Route path="history" element={<HistoryPageLayout />} />
+      </Routes>
     </SellerLayout>
   );
 }
